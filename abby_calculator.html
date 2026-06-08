@@ -1,0 +1,2184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outsourcing Calculator | Cheers Abby</title>
+
+<!-- Cheers Abby exact fonts from their Webflow CDN -->
+<style>
+@font-face {
+  font-family: 'Open Sauce One';
+  src: url('https://cdn.prod.website-files.com/65e2ba72843067f242655f2e/65e2ba72843067f242655fb1_OpenSauceOne-Medium.ttf') format('truetype');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Open Sauce One';
+  src: url('https://cdn.prod.website-files.com/65e2ba72843067f242655f2e/65e2ba72843067f242655fb0_OpenSauceOne-MediumItalic.ttf') format('truetype');
+  font-weight: 500; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'Open Sauce One';
+  src: url('https://cdn.prod.website-files.com/65e2ba72843067f242655f2e/65e2ba72843067f242655fb3_OpenSauceOne-SemiBold.ttf') format('truetype');
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Open Sauce One';
+  src: url('https://cdn.prod.website-files.com/65e2ba72843067f242655f2e/65e2ba72843067f242655fad_OpenSauceOne-SemiBoldItalic.ttf') format('truetype');
+  font-weight: 600; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'Open Sauce One';
+  src: url('https://cdn.prod.website-files.com/65e2ba72843067f242655f2e/65e2ba72843067f242655fb3_OpenSauceOne-SemiBold.ttf') format('truetype');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Clashdisplay Variable';
+  src: url('https://cdn.prod.website-files.com/65e2ba72843067f242655f2e/65e9613c1699e0c71721ad53_ClashDisplay-Variable.ttf') format('truetype');
+  font-weight: 200 700; font-style: normal; font-display: swap;
+}
+</style>
+
+<style>
+/* ── DESIGN TOKENS ── */
+:root {
+  --red:      #b72e3e;
+  --red-dark: #8b1a26;
+  --navy:     #040114;
+  --beige:    #f4f3ef;
+  --beige-2:  #ede9e1;
+  --white:    #ffffff;
+  --dark:     #111111;
+  --mid:      #464b51;
+  --muted:    #727272;
+  --border:   rgba(0,0,0,0.10);
+  --border-2: rgba(0,0,0,0.16);
+
+  --font-display: 'Clashdisplay Variable', sans-serif;
+  --font-body:    'Open Sauce One', sans-serif;
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--white);
+  color: var(--dark);
+  font-family: var(--font-body);
+  font-weight: 500;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.gate-active { overflow: hidden; }
+
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+
+
+/* ═══════════════════════════════════
+   GATE POPUP
+═══════════════════════════════════ */
+.gate-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: rgba(4,1,20,0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.gate-overlay.hidden { display: none; }
+
+.gate-card {
+  background: var(--white);
+  border-radius: 18px;
+  padding: 52px 48px 44px;
+  max-width: 460px;
+  width: 100%;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.45);
+  text-align: center;
+  position: relative;
+}
+
+.gate-logo {
+  height: 30px;
+  width: auto;
+  margin: 0 auto 36px;
+}
+
+.gate-eyebrow {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.gate-eyebrow::before,
+.gate-eyebrow::after {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 2px;
+  background: var(--red);
+  flex-shrink: 0;
+}
+
+.gate-heading {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--dark);
+  margin-bottom: 12px;
+}
+
+.gate-heading em { color: var(--red); font-style: normal; }
+
+.gate-sub {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: 36px;
+  max-width: 340px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.gate-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.gate-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.gate-field input {
+  width: 100%;
+  border: 1.5px solid var(--border-2);
+  border-radius: 8px;
+  padding: 13px 16px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--dark);
+  background: var(--beige);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.gate-field input:focus {
+  border-color: var(--red);
+  background: var(--white);
+}
+
+.gate-field input::placeholder { color: var(--muted); }
+
+.gate-error {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--red);
+  margin-top: 4px;
+  display: none;
+}
+
+.gate-error.visible { display: block; }
+
+.gate-submit {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--red);
+  border: none;
+  border-radius: 8px;
+  padding: 16px 24px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  letter-spacing: -0.01em;
+}
+
+.gate-submit:hover { background: var(--red-dark); transform: translateY(-1px); }
+
+.gate-check-wrap {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.gate-check-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mid);
+  line-height: 1.5;
+}
+
+.gate-check-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  accent-color: var(--red);
+  margin-top: 1px;
+  cursor: pointer;
+}
+
+.gate-note {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 16px;
+}
+
+@media (max-width: 520px) {
+  .gate-card { padding: 36px 24px 32px; }
+}
+
+
+/* ═══════════════════════════════════
+   NAV
+═══════════════════════════════════ */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 48px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.nav-logo img { height: 34px; width: auto; }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--dark);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--red); }
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-nav-secondary {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dark);
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-2);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-nav-secondary:hover { border-color: var(--dark); }
+
+.btn-primary {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--red);
+  text-decoration: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+  transition: background 0.2s, transform 0.15s;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.btn-primary:hover { background: var(--red-dark); transform: translateY(-1px); }
+
+.btn-primary-large {
+  font-size: 16px;
+  padding: 16px 36px;
+  border-radius: 8px;
+}
+
+.btn-outline {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  background: transparent;
+  text-decoration: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  display: inline-block;
+  transition: border-color 0.2s, background 0.2s;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+
+.btn-outline:hover { border-color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.07); }
+
+.btn-outline-large {
+  font-size: 16px;
+  padding: 16px 36px;
+  border-radius: 8px;
+}
+
+.btn-outline-dark {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dark);
+  background: transparent;
+  text-decoration: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-2);
+  display: inline-block;
+  transition: border-color 0.2s;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+
+.btn-outline-dark:hover { border-color: var(--dark); }
+.btn-outline-dark-large { font-size: 16px; padding: 16px 36px; border-radius: 8px; }
+
+
+/* ═══════════════════════════════════
+   SECTION UTILITIES
+═══════════════════════════════════ */
+.section-label {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--red);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 2px;
+  background: var(--red);
+  flex-shrink: 0;
+}
+
+.section-label.light { color: rgba(255,255,255,0.6); }
+.section-label.light::before { background: rgba(255,255,255,0.4); }
+.section-label.red-bg { color: rgba(255,255,255,0.8); }
+.section-label.red-bg::before { background: rgba(255,255,255,0.6); }
+
+.display-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.0;
+  color: var(--dark);
+}
+
+.display-heading.white { color: var(--white); }
+.display-heading em { color: var(--red); font-style: normal; }
+
+.body-text {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.72;
+  color: var(--mid);
+}
+
+.body-text.light { color: rgba(255,255,255,0.6); }
+.body-text strong { color: var(--dark); font-weight: 600; }
+.body-text.light strong { color: #fff; }
+
+
+/* ═══════════════════════════════════
+   1. HERO
+═══════════════════════════════════ */
+.hero {
+  background: var(--white);
+  padding: 100px 48px 96px;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: var(--red);
+  pointer-events: none;
+  width: 600px;
+  height: 600px;
+  top: -280px;
+  right: -160px;
+  opacity: 0.04;
+}
+
+.hero-inner {
+  max-width: 860px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(60px, 9vw, 108px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  color: var(--dark);
+  margin-bottom: 36px;
+}
+
+.hero h1 em { color: var(--red); font-style: normal; }
+
+.hero-body {
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--mid);
+  font-weight: 500;
+  max-width: 580px;
+  margin-bottom: 44px;
+}
+
+.hero-body strong { color: var(--dark); font-weight: 600; }
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-top: 64px;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+}
+
+.hero-stat-number {
+  font-family: var(--font-display);
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--dark);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.hero-stat-number em { color: var(--red); font-style: normal; }
+
+.hero-stat-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+
+/* ═══════════════════════════════════
+   2. EOFY URGENCY STRIP
+═══════════════════════════════════ */
+.eofy-strip {
+  background: var(--red);
+  padding: 28px 48px;
+}
+
+.eofy-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.eofy-badge {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.12);
+  padding: 4px 12px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.eofy-text {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.eofy-heading {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  white-space: nowrap;
+}
+
+.eofy-sub {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.4;
+}
+
+.eofy-cta {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--red);
+  background: var(--white);
+  text-decoration: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.eofy-cta:hover { background: var(--beige); }
+
+
+/* ═══════════════════════════════════
+   3. CALCULATOR
+═══════════════════════════════════ */
+.calc-section {
+  background: var(--beige);
+  padding: 88px 48px;
+}
+
+.calc-header {
+  max-width: 1100px;
+  margin: 0 auto 48px;
+}
+
+.calc-header h2 {
+  font-size: clamp(36px, 4.5vw, 54px);
+  margin-bottom: 14px;
+}
+
+.calc-header .body-text { max-width: 520px; }
+
+.calc-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* input panel */
+.calc-panel {
+  background: var(--white);
+  padding: 40px;
+  border-radius: 14px;
+  border: 1px solid var(--border-2);
+}
+
+.panel-title {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.field { margin-bottom: 28px; }
+
+.field:last-child { margin-bottom: 0; }
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 5px;
+  letter-spacing: -0.01em;
+}
+
+.field-hint {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.input-wrap { position: relative; }
+
+.input-prefix {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+input[type="number"] {
+  width: 100%;
+  background: var(--beige);
+  border: 1.5px solid var(--border-2);
+  color: var(--dark);
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  padding: 13px 18px 13px 38px;
+  outline: none;
+  border-radius: 8px;
+  transition: border-color 0.2s, background 0.2s;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+input[type="number"]:focus { border-color: var(--red); background: var(--white); }
+
+.slider-wrap { margin-top: 10px; }
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--border-2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--red);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.15s;
+  box-shadow: 0 2px 8px rgba(183,46,62,0.35);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 7px;
+}
+
+.range-labels span {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+/* results panel */
+.results-panel {
+  background: var(--white);
+  padding: 40px;
+  border-radius: 14px;
+  border: 1px solid var(--border-2);
+  display: flex;
+  flex-direction: column;
+}
+
+.result-group { margin-bottom: 24px; }
+
+.result-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.result-value {
+  font-family: var(--font-display);
+  font-size: 46px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: rgba(0,0,0,0.18);
+  transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+
+.result-value.cost   { color: var(--mid); }
+.result-value.brand  { color: var(--red); }
+.result-value.saving { color: var(--dark); }
+
+.result-note {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 5px;
+  line-height: 1.5;
+}
+
+.result-note.id-saving { color: var(--mid); }
+
+.result-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 0 24px;
+}
+
+/* verdict block */
+.verdict {
+  margin-top: auto;
+  background: var(--beige);
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  padding: 22px;
+}
+
+.verdict::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 3px;
+  background: var(--red);
+  border-radius: 2px;
+  margin-bottom: 12px;
+}
+
+.verdict-heading {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--dark);
+  margin-bottom: 7px;
+}
+
+.verdict-body {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.65;
+  color: var(--mid);
+}
+
+.verdict-body strong { color: var(--dark); font-weight: 600; }
+
+
+/* ═══════════════════════════════════
+   4. HIDDEN COSTS
+═══════════════════════════════════ */
+.hidden-costs {
+  background: var(--white);
+  padding: 96px 48px;
+}
+
+.hidden-costs-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hidden-costs-header {
+  max-width: 600px;
+  margin-bottom: 56px;
+}
+
+.hidden-costs-header h2 {
+  font-size: clamp(36px, 4vw, 52px);
+  margin-bottom: 16px;
+}
+
+.costs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 56px;
+}
+
+.cost-card {
+  padding: 32px 0;
+  border-top: 1.5px solid var(--border-2);
+}
+
+.cost-card-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--dark);
+  margin-bottom: 10px;
+}
+
+.cost-card-body {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mid);
+  line-height: 1.65;
+}
+
+.cost-card-stat {
+  margin-top: 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.cost-stat-number {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--red);
+}
+
+.cost-stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+
+/* ═══════════════════════════════════
+   5. WHAT IS ABBY
+═══════════════════════════════════ */
+.what-is-abby {
+  background: var(--beige);
+  padding: 96px 48px;
+}
+
+.wia-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.wia-heading {
+  font-size: clamp(36px, 4vw, 52px);
+  margin-bottom: 22px;
+}
+
+.wia-body { margin-bottom: 36px; }
+
+.wia-bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.wia-bullet {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mid);
+  line-height: 1.5;
+}
+
+.wia-bullet-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--red);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+
+.wia-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.wia-step {
+  padding: 20px 0;
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 16px;
+  align-items: start;
+  border-top: 1px solid var(--border-2);
+}
+
+.wia-steps > .wia-step:last-child {
+  border-bottom: 1px solid var(--border-2);
+}
+
+.wia-step-num {
+  width: 40px;
+  height: 40px;
+  color: var(--red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.wia-step-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+
+.wia-step-desc {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mid);
+  line-height: 1.55;
+}
+
+
+/* ═══════════════════════════════════
+   6. COMPARISON TABLE
+═══════════════════════════════════ */
+.comparison {
+  background: var(--beige);
+  padding: 96px 48px;
+}
+
+.comparison-inner { max-width: 1100px; margin: 0 auto; }
+
+.comparison-header {
+  max-width: 580px;
+  margin-bottom: 52px;
+}
+
+.comparison-header h2 {
+  font-size: clamp(36px, 4vw, 52px);
+  margin-bottom: 14px;
+}
+
+.comp-table {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border-2);
+  background: var(--white);
+}
+
+.comp-thead {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  background: var(--beige-2);
+  border-bottom: 1px solid var(--border-2);
+}
+
+.comp-th {
+  padding: 18px 24px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+}
+
+.comp-th.abby-col {
+  background: var(--red);
+  color: rgba(255,255,255,0.9);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.comp-th.abby-col img { height: 18px; width: auto; filter: brightness(0) invert(1); }
+
+.comp-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  border-bottom: 1px solid var(--border);
+}
+
+.comp-row:last-child { border-bottom: none; }
+.comp-row:nth-child(even) { background: var(--beige); }
+
+.comp-cell {
+  padding: 18px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--dark);
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-right: 1px solid var(--border);
+}
+
+.comp-cell:last-child { border-right: none; }
+
+.comp-cell.feature-col { font-weight: 600; color: var(--dark); font-size: 13px; }
+.comp-cell.out-col { color: var(--muted); }
+.comp-cell.abby-col { color: var(--dark); font-weight: 600; background: rgba(183,46,62,0.04); }
+
+.check {
+  width: 18px;
+  height: 18px;
+  background: var(--red);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.check svg { width: 10px; height: 10px; color: white; }
+
+.cross {
+  width: 18px;
+  height: 18px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+
+/* ═══════════════════════════════════
+   BREAKDOWN TABLE
+═══════════════════════════════════ */
+.breakdown-section {
+  background: var(--white);
+  padding: 80px 48px;
+}
+
+.breakdown-inner { max-width: 1100px; margin: 0 auto; }
+
+.breakdown-inner h2 {
+  font-size: clamp(28px, 3.5vw, 40px);
+  margin-bottom: 28px;
+}
+
+.bk-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border-2);
+}
+
+.bk-table th {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+  text-align: left;
+  padding: 14px 22px;
+  background: var(--beige-2);
+  border-bottom: 1px solid var(--border-2);
+}
+
+.bk-table td {
+  padding: 15px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--dark);
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+}
+
+.bk-table tr:last-child td { border-bottom: none; }
+.bk-table tr:nth-child(even) td { background: var(--beige); }
+
+.bk-label { color: var(--mid); font-size: 13px; }
+.bk-out   { color: var(--mid); font-family: var(--font-display); font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
+.bk-abby  { color: var(--red); font-family: var(--font-display); font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
+.bk-save  { color: var(--dark); font-family: var(--font-display); font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+
+
+/* ═══════════════════════════════════
+   DEMO CTA
+═══════════════════════════════════ */
+.demo-cta {
+  background: var(--red);
+  padding: 100px 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.demo-cta::before {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  top: -180px;
+  right: -100px;
+  pointer-events: none;
+}
+
+.demo-cta-inner {
+  max-width: 680px;
+  position: relative;
+  z-index: 1;
+}
+
+.demo-cta h2 {
+  font-size: clamp(44px, 6vw, 72px);
+  margin-bottom: 22px;
+}
+
+.demo-cta .body-text { margin-bottom: 44px; }
+.demo-cta .hero-actions { flex-wrap: wrap; }
+
+.demo-cta-note {
+  margin-top: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+}
+
+
+/* ═══════════════════════════════════
+   LEAD POPUP
+═══════════════════════════════════ */
+.lead-popup {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 320px;
+  background: var(--white);
+  border: 1px solid var(--border-2);
+  border-radius: 14px;
+  padding: 28px;
+  z-index: 500;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.12);
+  transform: translateY(24px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease;
+}
+
+.lead-popup.visible { transform: translateY(0); opacity: 1; pointer-events: auto; }
+.lead-popup::before { content: ''; display: block; width: 28px; height: 3px; background: var(--red); border-radius: 2px; margin-bottom: 14px; }
+
+.popup-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  background: var(--beige);
+  border: none;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.popup-close:hover { background: var(--beige-2); color: var(--dark); }
+
+.popup-heading {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--dark);
+  line-height: 1.2;
+  margin-bottom: 8px;
+  padding-right: 20px;
+}
+
+.popup-sub {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  line-height: 1.55;
+  margin-bottom: 18px;
+}
+
+.popup-form { display: flex; flex-direction: column; gap: 8px; }
+
+.popup-input {
+  background: var(--beige);
+  border: 1.5px solid var(--border-2);
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dark);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  width: 100%;
+}
+
+.popup-input::placeholder { color: var(--muted); }
+.popup-input:focus { border-color: var(--red); background: var(--white); }
+
+.popup-submit {
+  background: var(--red);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+
+.popup-submit:hover { background: var(--red-dark); }
+.popup-thanks { font-size: 14px; font-weight: 600; color: var(--red); padding: 6px 0; }
+
+
+/* ═══════════════════════════════════
+   FOOTER
+═══════════════════════════════════ */
+.site-footer {
+  background: var(--navy);
+  padding: 64px 48px 40px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.footer-top {
+  max-width: 1200px;
+  margin: 0 auto 48px;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 48px;
+}
+
+.footer-logo-wrap img { height: 28px; width: auto; margin-bottom: 16px; }
+
+.footer-tagline {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.38);
+  line-height: 1.6;
+  max-width: 240px;
+}
+
+.footer-col-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 16px;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+}
+
+.footer-links a {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover { color: var(--white); }
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 28px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-copy {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.25);
+}
+
+.footer-bottom-links { display: flex; gap: 24px; }
+
+.footer-bottom-links a {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-bottom-links a:hover { color: rgba(255,255,255,0.6); }
+
+
+/* ═══════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero        { animation: fadeUp 0.65s ease both; }
+.eofy-strip  { animation: fadeUp 0.65s 0.08s ease both; }
+
+
+/* ═══════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════ */
+@media (max-width: 1024px) {
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 36px; }
+  .comp-thead, .comp-row { grid-template-columns: 1.2fr 1fr 1fr; }
+}
+
+@media (max-width: 860px) {
+  .wia-inner { grid-template-columns: 1fr; gap: 48px; }
+  .costs-grid { grid-template-columns: 1fr; }
+  .comp-thead, .comp-row { grid-template-columns: 1fr 1fr; }
+  .comp-cell.feature-col { display: none; }
+}
+
+@media (max-width: 768px) {
+  .nav-inner { padding: 0 20px; height: 60px; }
+  .nav-links { display: none; }
+  .hero { padding: 64px 20px 72px; }
+  .hero-stats { flex-wrap: wrap; gap: 24px; }
+  .eofy-strip { padding: 20px; }
+  .eofy-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .eofy-heading { font-size: 18px; }
+  .calc-section,
+  .hidden-costs,
+  .what-is-abby,
+  .comparison,
+  .demo-cta,
+  .breakdown-section { padding: 64px 20px; }
+  .calc-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+  .lead-popup { width: calc(100vw - 32px); right: 16px; bottom: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════
+     GATE POPUP
+════════════════════════════════ -->
+<div class="gate-overlay" id="gate-overlay">
+  <div class="gate-card">
+    <img
+      src="https://cdn.prod.website-files.com/65e2ba72843067f242655f2e/65e3dc26301ad30d254df443_abby.png"
+      alt="Cheers Abby"
+      class="gate-logo"
+    >
+    <div class="gate-eyebrow">Free calculator</div>
+    <h2 class="gate-heading">See what outsourcing is<br><em>really costing you</em></h2>
+    <p class="gate-sub">Enter your details to access the calculator and get a personalised breakdown of your outsourcing costs.</p>
+    <form id="gate-form" novalidate>
+      <div class="gate-fields">
+        <div class="gate-field">
+          <label for="gate-email">Work email</label>
+          <input type="email" id="gate-email" placeholder="you@yourfirm.com.au" autocomplete="email">
+          <div class="gate-error" id="gate-email-error">Please enter a valid email address.</div>
+        </div>
+        <div class="gate-field">
+          <label for="gate-firm">Firm name</label>
+          <input type="text" id="gate-firm" placeholder="e.g. Mitchell &amp; Co Accounting" autocomplete="organization">
+          <div class="gate-error" id="gate-firm-error">Please enter your firm name.</div>
+        </div>
+      </div>
+      <div class="gate-check-wrap">
+        <label class="gate-check-label">
+          <input type="checkbox" id="gate-updates" name="gate-updates">
+          <span>I am happy to receive updates from Abby</span>
+        </label>
+      </div>
+      <button type="submit" class="gate-submit">Access the calculator &rarr;</button>
+    </form>
+    <p class="gate-note">No spam. We respect your privacy.</p>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════
+     NAV
+════════════════════════════════ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="https://www.cheersabby.com" class="nav-logo">
+      <img src="https://cdn.prod.website-files.com/65e2ba72843067f242655f2e/65e3dc26301ad30d254df443_abby.png" alt="Cheers Abby">
+    </a>
+    <ul class="nav-links">
+      <li><a href="https://www.cheersabby.com/features">Abby Can</a></li>
+      <li><a href="https://www.cheersabby.com/calculator" style="color:var(--red);">Calculators</a></li>
+      <li><a href="https://www.cheersabby.com/learn">Learn</a></li>
+      <li><a href="https://www.cheersabby.com/blog">Blog</a></li>
+      <li><a href="https://www.cheersabby.com/contact">Contact Us</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="https://www.cheersabby.com/contact" class="btn-nav-secondary">Log in</a>
+      <a href="https://www.cheersabby.com/book-a-demo" class="btn-primary">Book a Demo</a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ════════════════════════════════
+     1. HERO
+════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="section-label">The Outsourcing Calculator</div>
+    <h1>What is your outsourcing<br><em>really</em> costing you?</h1>
+    <p class="hero-body">
+      Accountants have been sending compliance work offshore for decades. The invoice looks manageable.
+      But once you add the <strong>review loop, the corrections, and the back-and-forth,</strong> the real cost is a very different number.
+      Enter your figures below and find out.
+    </p>
+    <div class="hero-actions">
+      <a href="#calculator" class="btn-primary btn-primary-large">Calculate my saving</a>
+      <a href="#what-is-abby" class="btn-outline-dark btn-outline-dark-large">See how Abby works</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-number">40<em>+</em></div>
+        <div class="hero-stat-label">workpapers generated<br>per compliance job</div>
+      </div>
+      <div>
+        <div class="hero-stat-number">~<em>20</em> min</div>
+        <div class="hero-stat-label">to review an Abby job<br>vs 2+ hours offshore</div>
+      </div>
+      <div>
+        <div class="hero-stat-number"><em>0</em></div>
+        <div class="hero-stat-label">offshore dependency,<br>timezone delays, or rework</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════
+     2. EOFY URGENCY STRIP
+════════════════════════════════ -->
+<div class="eofy-strip">
+  <div class="eofy-inner">
+    <span class="eofy-badge">EOFY 2026</span>
+    <div class="eofy-text">
+      <div class="eofy-heading">8 weeks to 30 June.</div>
+      <div class="eofy-sub">Practices using Abby are already ahead. No offshore queue, no EOFY bottleneck. Are you set up?</div>
+    </div>
+    <a href="https://www.cheersabby.com/book-a-demo" class="eofy-cta">Get ready for EOFY &rarr;</a>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════
+     3. THE CALCULATOR
+════════════════════════════════ -->
+<section class="calc-section" id="calculator">
+  <div class="calc-header">
+    <div class="section-label">Run your numbers</div>
+    <h2 class="display-heading">See your saving<br>in real time</h2>
+    <p class="body-text">Adjust the inputs to match your practice. The numbers update instantly, showing exactly what outsourcing is costing you versus a flat Abby subscription.</p>
+  </div>
+
+  <div class="calc-grid">
+
+    <!-- INPUTS -->
+    <div class="calc-panel">
+      <div class="panel-title">Your current outsourcing setup</div>
+
+      <div class="field">
+        <label>Compliance jobs outsourced per week</label>
+        <div class="field-hint">Annual accounts, tax prep, workpaper compilations.</div>
+        <div class="input-wrap">
+          <input type="number" id="jobs" min="1" max="100" value="10">
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="jobs-range" min="1" max="100" value="10">
+          <div class="range-labels"><span>1 job</span><span>100 jobs</span></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Outsourcing fee per job (AUD)</label>
+        <div class="field-hint">What you pay the outsourcing provider per completed job.</div>
+        <div class="input-wrap">
+          <span class="input-prefix">$</span>
+          <input type="number" id="outsource-cost" min="50" max="1000" value="280">
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="cost-range" min="50" max="1000" value="280">
+          <div class="range-labels"><span>$50</span><span>$1,000</span></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Hours your team spends reviewing each job</label>
+        <div class="field-hint">Include corrections, queries, and back-and-forth.</div>
+        <div class="input-wrap">
+          <input type="number" id="review-hours" min="0.5" max="8" step="0.5" value="2.5">
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="review-range" min="0.5" max="8" step="0.5" value="2.5">
+          <div class="range-labels"><span>0.5 hrs</span><span>8 hrs</span></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Your average hourly billing rate (AUD)</label>
+        <div class="field-hint">Used to value your team's review time.</div>
+        <div class="input-wrap">
+          <span class="input-prefix">$</span>
+          <input type="number" id="hourly-rate" min="80" max="500" value="180">
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="rate-range" min="80" max="500" value="180">
+          <div class="range-labels"><span>$80</span><span>$500</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-panel">
+      <div class="panel-title">Your numbers</div>
+
+      <div class="result-group">
+        <div class="result-label">Annual outsourcing fees</div>
+        <div class="result-value cost" id="out-annual">$0</div>
+        <div class="result-note">What you pay your outsourcer directly, across 52 weeks</div>
+      </div>
+
+      <div class="result-group">
+        <div class="result-label">Annual cost of review time</div>
+        <div class="result-value cost" id="out-review">$0</div>
+        <div class="result-note">The hidden cost: your team's hours checking and correcting</div>
+      </div>
+
+      <div class="result-divider"></div>
+
+      <div class="result-group">
+        <div class="result-label">Estimated Abby annual cost</div>
+        <div class="result-value brand" id="abby-cost">$0</div>
+        <div class="result-note">Flat subscription. No review loop, no offshore dependency.</div>
+      </div>
+
+      <div class="result-group">
+        <div class="result-label">Your annual saving with Abby</div>
+        <div class="result-value saving" id="saving">$0</div>
+        <div class="result-note id-saving" id="saving-sub">That's capacity you could use to take on more clients or bill advisory work</div>
+      </div>
+
+      <div class="result-divider"></div>
+
+      <div class="verdict">
+        <div class="verdict-heading" id="verdict-heading">Run the numbers</div>
+        <div class="verdict-body" id="verdict-body">Adjust the inputs above to see what your outsourcing is actually costing your practice.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════
+     4. HIDDEN COSTS
+════════════════════════════════ -->
+<section class="hidden-costs">
+  <div class="hidden-costs-inner">
+    <div class="hidden-costs-header">
+      <div class="section-label">The real cost</div>
+      <h2 class="display-heading">The outsourcing invoice<br>is just the <em>beginning.</em></h2>
+      <p class="body-text" style="margin-top:14px;">The per-job fee is visible. Everything else gets absorbed silently by your team. It adds up fast.</p>
+    </div>
+
+    <div class="costs-grid">
+      <div class="cost-card">
+        <div class="cost-card-title">The review loop</div>
+        <div class="cost-card-body">Every offshore job comes back needing eyes on it. Corrections, follow-up questions, clarifications. That time belongs to your senior staff, your most expensive resource, and it's invisible on any invoice.</div>
+        <div class="cost-card-stat">
+          <div class="cost-stat-number">2-3 hrs</div>
+          <div class="cost-stat-label">average review time<br>per outsourced job</div>
+        </div>
+      </div>
+
+      <div class="cost-card">
+        <div class="cost-card-title">Inconsistent quality</div>
+        <div class="cost-card-body">Offshore work varies by operator, by week, by workload. Some jobs are fine. Some need to be rebuilt. Your team never knows what they're walking into, and client-facing errors can cost you far more than the job fee.</div>
+        <div class="cost-card-stat">
+          <div class="cost-stat-number">Variable</div>
+          <div class="cost-stat-label">quality with no<br>consistency guarantee</div>
+        </div>
+      </div>
+
+      <div class="cost-card">
+        <div class="cost-card-title">Offshore dependency risk</div>
+        <div class="cost-card-body">Your turnaround depends on another team, another timezone, another country's staffing situation. At EOFY, when you need speed most, you're in a queue with every other practice using the same provider.</div>
+        <div class="cost-card-stat">
+          <div class="cost-stat-number">3-7 days</div>
+          <div class="cost-stat-label">typical offshore<br>turnaround time</div>
+        </div>
+      </div>
+
+      <div class="cost-card">
+        <div class="cost-card-title">Capacity you can't sell</div>
+        <div class="cost-card-body">Every hour your senior staff spend reviewing compliance work is an hour not spent on advisory, on new clients, on higher-margin work. The opportunity cost of the review loop is real. It just doesn't appear on any P&amp;L.</div>
+        <div class="cost-card-stat">
+          <div class="cost-stat-number" id="hidden-cost-cap"></div>
+          <div class="cost-stat-label">in billable capacity lost<br>to review each year</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════
+     5. WHAT IS ABBY
+════════════════════════════════ -->
+<section class="what-is-abby" id="what-is-abby">
+  <div class="wia-inner">
+    <div>
+      <div class="section-label">Meet Abby</div>
+      <h2 class="display-heading wia-heading">Compliance workpapers,<br><em>automated.</em></h2>
+      <p class="body-text wia-body">
+        Abby connects directly to Xero and XPM, pulls your client data automatically, and generates a complete set of compliance workpapers, pre-populated, pre-calculated, and cross-referenced. No offshore queue. No rework. No timezone delays.
+      </p>
+      <div class="wia-bullets">
+        <div class="wia-bullet"><div class="wia-bullet-dot"></div>Annual accounts and financial statements</div>
+        <div class="wia-bullet"><div class="wia-bullet-dot"></div>Tax workpapers with supporting calculations</div>
+        <div class="wia-bullet"><div class="wia-bullet-dot"></div>Depreciation schedules and asset registers</div>
+        <div class="wia-bullet"><div class="wia-bullet-dot"></div>Loan accounts, trust distributions, dividends</div>
+        <div class="wia-bullet"><div class="wia-bullet-dot"></div>Full cross-referencing and audit trail</div>
+      </div>
+      <div style="margin-top:36px;">
+        <a href="https://www.cheersabby.com/book-a-demo" class="btn-primary btn-primary-large">Book a demo</a>
+      </div>
+    </div>
+
+    <div class="wia-steps">
+      <div class="wia-step">
+        <div class="wia-step-num">01</div>
+        <div>
+          <div class="wia-step-title">Connect</div>
+          <div class="wia-step-desc">Link your Xero or XPM. Client data flows in automatically. No manual entry, no spreadsheets.</div>
+        </div>
+      </div>
+
+      <div class="wia-step">
+        <div class="wia-step-num">02</div>
+        <div>
+          <div class="wia-step-title">Gather</div>
+          <div class="wia-step-desc">Abby pulls the trial balance, prior year comparatives, and all supporting data it needs.</div>
+        </div>
+      </div>
+
+      <div class="wia-step">
+        <div class="wia-step-num">03</div>
+        <div>
+          <div class="wia-step-title">Calculate</div>
+          <div class="wia-step-desc">40+ workpapers generated, pre-populated, cross-referenced, and mathematically accurate.</div>
+        </div>
+      </div>
+
+      <div class="wia-step">
+        <div class="wia-step-num">04</div>
+        <div>
+          <div class="wia-step-title">Review &amp; Approve</div>
+          <div class="wia-step-desc">Your team reviews in about 20 minutes. You check, you don't rebuild. Job done, same day.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════
+     6. COMPARISON TABLE
+════════════════════════════════ -->
+<section class="comparison">
+  <div class="comparison-inner">
+    <div class="comparison-header">
+      <h2 class="display-heading">See the difference<br>side by <em>side.</em></h2>
+      <p class="body-text" style="margin-top:12px;">Not all compliance solutions are equal. Here's what changes when you switch from offshore to Abby.</p>
+    </div>
+
+    <div class="comp-table">
+      <div class="comp-thead">
+        <div class="comp-th">Feature</div>
+        <div class="comp-th">Offshore outsourcing</div>
+        <div class="comp-th abby-col">
+          <img src="https://cdn.prod.website-files.com/65e2ba72843067f242655f2e/65eab01d8653639b4294495d_Abby%20White.png" alt="Abby">
+          Abby
+        </div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell feature-col">Cost model</div>
+        <div class="comp-cell out-col">Per-job fees plus hidden review costs</div>
+        <div class="comp-cell abby-col"><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,6 5,9 10,3"/></svg></span> Flat monthly subscription</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell feature-col">Review time per job</div>
+        <div class="comp-cell out-col"><span class="cross">&#x2715;</span> 2-3+ hours of senior staff time</div>
+        <div class="comp-cell abby-col"><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,6 5,9 10,3"/></svg></span> About 20 minutes to review</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell feature-col">Turnaround time</div>
+        <div class="comp-cell out-col"><span class="cross">&#x2715;</span> 3-7 business days</div>
+        <div class="comp-cell abby-col"><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,6 5,9 10,3"/></svg></span> Same day</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell feature-col">Work consistency</div>
+        <div class="comp-cell out-col"><span class="cross">&#x2715;</span> Varies by operator and workload</div>
+        <div class="comp-cell abby-col"><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,6 5,9 10,3"/></svg></span> Consistent every time</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell feature-col">Offshore dependency</div>
+        <div class="comp-cell out-col"><span class="cross">&#x2715;</span> Yes, with timezone, capacity, and risk concerns</div>
+        <div class="comp-cell abby-col"><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,6 5,9 10,3"/></svg></span> None. Fully in-house.</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell feature-col">EOFY scalability</div>
+        <div class="comp-cell out-col"><span class="cross">&#x2715;</span> Queue with every other practice</div>
+        <div class="comp-cell abby-col"><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,6 5,9 10,3"/></svg></span> No bottleneck. Unlimited jobs.</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell feature-col">Xero / XPM integration</div>
+        <div class="comp-cell out-col"><span class="cross">&#x2715;</span> Manual data transfer</div>
+        <div class="comp-cell abby-col"><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,6 5,9 10,3"/></svg></span> Direct, automatic pull</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell feature-col">Staff capacity freed</div>
+        <div class="comp-cell out-col"><span class="cross">&#x2715;</span> Absorbed into review loop</div>
+        <div class="comp-cell abby-col"><span class="check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,6 5,9 10,3"/></svg></span> Redirected to advisory &amp; growth</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════
+     BREAKDOWN TABLE
+════════════════════════════════ -->
+<section class="breakdown-section">
+  <div class="breakdown-inner">
+    <h2 class="display-heading">Your numbers, line by line</h2>
+    <p class="body-text" style="margin-bottom:32px;">Based on the inputs you entered above.</p>
+    <table class="bk-table">
+      <thead>
+        <tr>
+          <th>Line item</th>
+          <th>Outsourcing</th>
+          <th>Abby</th>
+          <th>Saving</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="bk-label">Direct cost per job</td>
+          <td class="bk-out"  id="t-out-job"></td>
+          <td class="bk-abby" id="t-abby-job"></td>
+          <td class="bk-save" id="t-save-job"></td>
+        </tr>
+        <tr>
+          <td class="bk-label">Review cost per job</td>
+          <td class="bk-out"  id="t-out-review"></td>
+          <td class="bk-abby" id="t-abby-review"></td>
+          <td class="bk-save" id="t-save-review"></td>
+        </tr>
+        <tr>
+          <td class="bk-label">Total cost per job</td>
+          <td class="bk-out"  id="t-out-total"></td>
+          <td class="bk-abby" id="t-abby-total"></td>
+          <td class="bk-save" id="t-save-total"></td>
+        </tr>
+        <tr>
+          <td class="bk-label">Annual cost (your job volume)</td>
+          <td class="bk-out"  id="t-out-annual"></td>
+          <td class="bk-abby" id="t-abby-annual"></td>
+          <td class="bk-save" id="t-save-annual"></td>
+        </tr>
+        <tr>
+          <td class="bk-label">Hours spent reviewing per year</td>
+          <td class="bk-out"  id="t-out-hrs"></td>
+          <td class="bk-abby" id="t-abby-hrs"></td>
+          <td class="bk-save" id="t-save-hrs"></td>
+        </tr>
+        <tr>
+          <td class="bk-label">Value of recovered capacity</td>
+          <td class="bk-out"></td>
+          <td class="bk-abby" id="t-cap-value"></td>
+          <td class="bk-save" id="t-save-cap"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════
+     DEMO CTA
+════════════════════════════════ -->
+<section class="demo-cta">
+  <div class="demo-cta-inner">
+    <div class="section-label red-bg">Book a demo</div>
+    <h2 class="display-heading white">See it working on<br>a <em style="color:var(--navy)">real</em> job.</h2>
+    <p class="body-text light demo-cta-body">Book a 30-minute demo and watch Abby compile a full set of workpapers from scratch, live from your client data, with no prep needed from you.</p>
+    <div class="hero-actions">
+      <a href="https://www.cheersabby.com/book-a-demo" class="btn-primary btn-primary-large" style="background:var(--navy);">Book a Demo</a>
+      <a href="https://www.cheersabby.com/features" class="btn-outline btn-outline-large">See all features</a>
+    </div>
+    <p class="demo-cta-note">No commitment. No prep needed. Just 30 minutes and a set of live workpapers.</p>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════
+     FOOTER
+════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="footer-top">
+    <div class="footer-logo-wrap">
+      <img src="https://cdn.prod.website-files.com/65e2ba72843067f242655f2e/65eab01d8653639b4294495d_Abby%20White.png" alt="Cheers Abby">
+      <p class="footer-tagline">Start automating your accounting process today.</p>
+    </div>
+    <div>
+      <div class="footer-col-label">Contact us</div>
+      <ul class="footer-links">
+        <li><a href="tel:+64272462904">027 246 2904</a></li>
+        <li><a href="mailto:welcome@cheersabby.com">welcome@cheersabby.com</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-label">Meet Abby</div>
+      <ul class="footer-links">
+        <li><a href="https://www.cheersabby.com/features">Features</a></li>
+        <li><a href="https://www.cheersabby.com/about">About Us</a></li>
+        <li><a href="https://www.cheersabby.com/book-a-demo">Book a Demo</a></li>
+        <li><a href="https://www.cheersabby.com/calculator">Calculators</a></li>
+        <li><a href="https://www.cheersabby.com/blog">Blog</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-label">We're here to help</div>
+      <ul class="footer-links">
+        <li><a href="https://www.cheersabby.com/support">Support</a></li>
+        <li><a href="https://www.cheersabby.com/training">Training</a></li>
+        <li><a href="https://www.cheersabby.com/contact">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">&copy; Copyright &ndash; Altitude Best Limited &ldquo;Abby&rdquo;, 2026</p>
+    <div class="footer-bottom-links">
+      <a href="https://www.cheersabby.com/privacy">Privacy Policy</a>
+      <a href="https://www.cheersabby.com/terms">Terms of Use</a>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ════════════════════════════════
+     LEAD POPUP
+════════════════════════════════ -->
+<div class="lead-popup" id="lead-popup">
+  <button class="popup-close" id="popup-close" aria-label="Close">&#x2715;</button>
+  <div class="popup-heading">Get your free outsourcing report</div>
+  <p class="popup-sub">We'll email you a personalised PDF of your numbers to share with your partners.</p>
+  <form class="popup-form" id="popup-form" novalidate>
+    <input type="email" class="popup-input" id="popup-email" placeholder="your@firm.com.au" required autocomplete="email">
+    <button type="submit" class="popup-submit">Send my report &rarr;</button>
+  </form>
+</div>
+
+
+<script>
+/* ── HELPERS ── */
+const fmt    = (n) => '$' + Math.round(n).toLocaleString('en-AU');
+const fmtHrs = (n) => Math.round(n).toLocaleString('en-AU') + ' hrs';
+
+/* Abby indicative pricing: tiered monthly subscription */
+function abbyAnnualCost(jobsPerWeek) {
+  const m = jobsPerWeek * 4.33;
+  let mo;
+  if      (m <= 50)  mo = 500;
+  else if (m <= 150) mo = 800;
+  else if (m <= 300) mo = 1200;
+  else               mo = 1800;
+  return mo * 12;
+}
+
+function abbyPerJob(jpw) {
+  return abbyAnnualCost(jpw) / (jpw * 52);
+}
+
+const ABBY_REVIEW_HRS = 1 / 3; /* approx 20 min per Abby job */
+
+function calculate() {
+  const jobs      = parseFloat(document.getElementById('jobs').value)          || 10;
+  const outCost   = parseFloat(document.getElementById('outsource-cost').value) || 280;
+  const reviewHrs = parseFloat(document.getElementById('review-hours').value)   || 2.5;
+  const rate      = parseFloat(document.getElementById('hourly-rate').value)    || 180;
+
+  /* outsourcing */
+  const outReviewPerJob = reviewHrs * rate;
+  const outTotalPerJob  = outCost + outReviewPerJob;
+  const outAnnual       = outCost * jobs * 52;
+  const outReviewAnnual = outReviewPerJob * jobs * 52;
+  const outTotalAnnual  = outAnnual + outReviewAnnual;
+
+  /* abby */
+  const abbyAnnual       = abbyAnnualCost(jobs);
+  const abbyPJ           = abbyPerJob(jobs);
+  const abbyReviewPerJob = ABBY_REVIEW_HRS * rate;
+  const abbyTotalPerJob  = abbyPJ + abbyReviewPerJob;
+  const abbyReviewAnnual = abbyReviewPerJob * jobs * 52;
+  const abbyTotalAnnual  = abbyAnnual + abbyReviewAnnual;
+  const abbyHrsAnnual    = ABBY_REVIEW_HRS * jobs * 52;
+
+  /* savings */
+  const saving       = outTotalAnnual - abbyTotalAnnual;
+  const hrsRecovered = (reviewHrs - ABBY_REVIEW_HRS) * jobs * 52;
+  const capValue     = hrsRecovered * rate;
+
+  /* results panel */
+  set('out-annual', fmt(outAnnual));
+  set('out-review', fmt(outReviewAnnual));
+  set('abby-cost',  fmt(abbyTotalAnnual));
+  set('saving',     saving > 0 ? fmt(saving) : '$0');
+
+  document.getElementById('saving-sub').textContent = hrsRecovered > 0
+    ? `That's ${Math.round(hrsRecovered).toLocaleString('en-AU')} hours of review time recovered per year.`
+    : 'Includes recovered review time across your job volume.';
+
+  /* hidden cost card */
+  const hcc = document.getElementById('hidden-cost-cap');
+  if (hcc) hcc.textContent = capValue > 0 ? fmt(capValue) : '';
+
+  /* breakdown table */
+  set('t-out-job',    fmt(outCost));
+  set('t-abby-job',   fmt(abbyPJ));
+  set('t-save-job',   fmt(Math.max(0, outCost - abbyPJ)));
+
+  set('t-out-review',  fmt(outReviewPerJob));
+  set('t-abby-review', fmt(abbyReviewPerJob));
+  set('t-save-review', fmt(Math.max(0, outReviewPerJob - abbyReviewPerJob)));
+
+  set('t-out-total',   fmt(outTotalPerJob));
+  set('t-abby-total',  fmt(abbyTotalPerJob));
+  set('t-save-total',  fmt(Math.max(0, outTotalPerJob - abbyTotalPerJob)));
+
+  set('t-out-annual',  fmt(outTotalAnnual));
+  set('t-abby-annual', fmt(abbyTotalAnnual));
+  set('t-save-annual', fmt(Math.max(0, saving)));
+
+  set('t-out-hrs',  fmtHrs(reviewHrs * jobs * 52));
+  set('t-abby-hrs', fmtHrs(abbyHrsAnnual));
+  set('t-save-hrs', fmtHrs(Math.max(0, hrsRecovered)));
+
+  set('t-cap-value', fmt(capValue));
+  set('t-save-cap',  fmt(capValue));
+
+  /* verdict */
+  let heading, body;
+  if (saving > 80000) {
+    heading = `You could save ${fmt(saving)} a year.`;
+    body    = `At your job volume, outsourcing is costing your practice <strong>${fmt(outTotalAnnual)} annually</strong> once you factor in the review loop. Abby removes that loop. Workpapers are pre-populated and pre-calculated, ready for your sign-off. That's <strong>${fmt(saving)} saved per year</strong>, plus <strong>${fmtHrs(hrsRecovered)} of recovered capacity</strong>.`;
+  } else if (saving > 30000) {
+    heading = `${fmt(saving)} a year back in your pocket.`;
+    body    = `The review loop on every outsourced job is costing you <strong>${fmt(outReviewAnnual)} a year</strong> in time you can't bill. Abby removes it. Your team reviews, not rebuilds.`;
+  } else if (saving > 0) {
+    heading = `Abby saves you ${fmt(saving)} annually.`;
+    body    = `Even at your current job volume, Abby comes out ahead once review time is included. As your volume grows, so does the saving.`;
+  } else {
+    heading = `The numbers are closer than you think.`;
+    body    = `At lower volumes the dollar saving is smaller, but the <strong>consistency, speed, and control</strong> Abby gives you doesn't appear in this calculator. Book a demo to see the first five jobs for yourself.`;
+  }
+
+  document.getElementById('verdict-heading').textContent = heading;
+  document.getElementById('verdict-body').innerHTML      = body;
+}
+
+function set(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+/* slider sync */
+function syncPair(inputId, rangeId) {
+  const inp = document.getElementById(inputId);
+  const rng = document.getElementById(rangeId);
+  inp.addEventListener('input', () => { rng.value = inp.value; calculate(); });
+  rng.addEventListener('input', () => { inp.value = rng.value; calculate(); });
+}
+
+syncPair('jobs',           'jobs-range');
+syncPair('outsource-cost', 'cost-range');
+syncPair('review-hours',   'review-range');
+syncPair('hourly-rate',    'rate-range');
+
+calculate();
+
+/* ── GATE POPUP ── */
+const gateOverlay = document.getElementById('gate-overlay');
+const gateForm    = document.getElementById('gate-form');
+
+function unlockPage() {
+  gateOverlay.classList.add('hidden');
+  document.body.classList.remove('gate-active');
+}
+
+if (sessionStorage.getItem('gateUnlocked')) {
+  unlockPage();
+} else {
+  document.body.classList.add('gate-active');
+}
+
+gateForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const emailInput = document.getElementById('gate-email');
+  const firmInput  = document.getElementById('gate-firm');
+  const emailErr   = document.getElementById('gate-email-error');
+  const firmErr    = document.getElementById('gate-firm-error');
+
+  const email = emailInput.value.trim();
+  const firm  = firmInput.value.trim();
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const firmOk  = firm.length > 0;
+
+  emailErr.classList.toggle('visible', !emailOk);
+  firmErr.classList.toggle('visible', !firmOk);
+
+  if (!emailOk || !firmOk) return;
+
+  sessionStorage.setItem('gateUnlocked', '1');
+  unlockPage();
+});
+
+/* ── LEAD POPUP ── */
+const popup  = document.getElementById('lead-popup');
+const closer = document.getElementById('popup-close');
+const form   = document.getElementById('popup-form');
+let shown = false;
+
+function showPopup() {
+  if (shown || sessionStorage.getItem('popupDismissed')) return;
+  shown = true;
+  popup.classList.add('visible');
+}
+
+setTimeout(showPopup, 14000);
+
+window.addEventListener('scroll', function s() {
+  if ((window.scrollY / (document.body.scrollHeight - window.innerHeight)) > 0.55) {
+    showPopup();
+    window.removeEventListener('scroll', s);
+  }
+}, { passive: true });
+
+closer.addEventListener('click', () => {
+  popup.classList.remove('visible');
+  sessionStorage.setItem('popupDismissed', '1');
+});
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const email = document.getElementById('popup-email').value.trim();
+  if (!email) return;
+  form.innerHTML = `<p class="popup-thanks">Thanks! We'll send your report to ${email} shortly.</p>`;
+});
+</script>
+
+</body>
+</html>
