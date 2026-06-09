@@ -917,10 +917,10 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
         <div class="field-hint">What you charge clients for a typical compliance engagement.</div>
         <div class="input-wrap">
           <span class="input-prefix">$</span>
-          <input type="number" id="billable" min="500" max="10000" step="100" value="2500">
+          <input type="number" id="billable" min="500" max="10000" step="100" value="3000">
         </div>
         <div class="slider-wrap">
-          <input type="range" id="billable-range" min="500" max="10000" step="100" value="2500">
+          <input type="range" id="billable-range" min="500" max="10000" step="100" value="3000">
           <div class="range-labels"><span>$500</span><span>$10,000</span></div>
         </div>
       </div>
@@ -962,7 +962,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
       <div class="result-group">
         <div class="result-label">Weekly Abby cost</div>
         <div class="result-value brand" id="weekly-abby">$0</div>
-        <div class="result-note">$350 + GST per job</div>
+        <div class="result-note">$350 per job, ex GST</div>
       </div>
 
       <div class="result-group">
@@ -1060,9 +1060,7 @@ function calculate() {
   const pct      = parseFloat(document.getElementById('outsource-pct').value) || 25;
   const jobs     = parseFloat(document.getElementById('jobs').value)           || 20;
 
-  const abbyPriceExGst = 350;
-  const gst            = 0.15; // NZ GST
-  const abbyPrice      = abbyPriceExGst * (1 + gst); // $402.50 per job incl. GST
+  const abbyPrice      = 350; // ex GST, matches outsourcing cost which is also ex GST
   const costPerJob     = billable * (pct / 100);
   const weeklyOut      = costPerJob * jobs;
   const weeklyAbby     = abbyPrice * jobs;
@@ -1083,7 +1081,7 @@ function calculate() {
   let heading, body;
   if (annualSav > 80000) {
     heading = `You could save ${fmt(annualSav)} this year.`;
-    body    = `At your volume, outsourcing is costing your practice <strong>${fmt(weeklyOut)} per week</strong>. Abby replaces that at <strong>$350 + GST per job</strong>, saving you <strong>${fmt(annualSav)} per year</strong>.`;
+    body    = `At your volume, outsourcing is costing your practice <strong>${fmt(weeklyOut)} per week</strong>. Abby replaces that at <strong>$350 per job</strong>, saving you <strong>${fmt(annualSav)} per year</strong>.`;
   } else if (annualSav > 30000) {
     heading = `${fmt(annualSav)} back in your pocket.`;
     body    = `Your outsourcing spend is <strong>${fmt(weeklyOut)} per week</strong>. Abby brings that down to <strong>${fmt(weeklyAbby)}</strong>. Same jobs, same results, less cost.`;
