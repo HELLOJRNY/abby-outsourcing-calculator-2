@@ -1117,12 +1117,6 @@ function syncPair(inputId, rangeId) {
   rng.addEventListener('input', () => { calcInteracted = true; inp.value = rng.value; calculate(); });
 }
 
-syncPair('billable',      'billable-range');
-syncPair('outsource-pct', 'pct-range');
-syncPair('jobs',          'jobs-range');
-
-calculate();
-
 /* POPUPS */
 let calcInteracted   = false;
 let calcPopupShown   = false;
@@ -1130,6 +1124,12 @@ let engagePopupShown = false;
 let calcPopupTimer   = null;
 let engageTimer      = null;
 let scrollHandler    = null;
+
+syncPair('billable',      'billable-range');
+syncPair('outsource-pct', 'pct-range');
+syncPair('jobs',          'jobs-range');
+
+calculate();
 
 function showPopup(id) {
   document.getElementById(id).classList.add('visible');
