@@ -135,7 +135,7 @@ a { color: inherit; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
   text-align: left;
 }
 .gate-field-full { grid-column: 1 / -1; }
@@ -170,21 +170,6 @@ a { color: inherit; }
   display: none;
 }
 .gate-error.visible { display: block; }
-.gate-check-wrap { text-align: left; margin-bottom: 16px; margin-top: 4px; }
-.gate-check-label {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--mid);
-  line-height: 1.5;
-}
-.gate-check-label input[type="checkbox"] {
-  width: 16px; height: 16px; min-width: 16px;
-  accent-color: var(--red); margin-top: 1px; cursor: pointer;
-}
 .gate-submit {
   width: 100%;
   font-family: var(--font-body);
@@ -208,8 +193,8 @@ a { color: inherit; }
 }
 
 
-/* NAV */
-.nav {
+/* HEADER (logo only) */
+.site-header {
   position: sticky;
   top: 0;
   z-index: 200;
@@ -218,47 +203,18 @@ a { color: inherit; }
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
 }
-.nav-inner {
+.header-inner {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 48px;
   height: 68px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 32px;
 }
-.nav-logo img { height: 34px; width: auto; }
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  list-style: none;
-}
-.nav-links a {
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--dark);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.nav-links a:hover { color: var(--red); }
-.nav-actions { display: flex; align-items: center; gap: 12px; }
+.header-logo img { height: 34px; width: auto; }
 
-.btn-nav-secondary {
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--dark);
-  text-decoration: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: 1.5px solid var(--border-2);
-  transition: border-color 0.2s;
-}
-.btn-nav-secondary:hover { border-color: var(--dark); }
 
+/* BUTTONS */
 .btn-primary {
   font-family: var(--font-body);
   font-size: 14px;
@@ -365,7 +321,7 @@ a { color: inherit; }
 /* HERO */
 .hero {
   background: var(--white);
-  padding: 100px 48px 96px;
+  padding: 88px 48px 80px;
   position: relative;
   overflow: hidden;
   border-bottom: 1px solid var(--border);
@@ -376,35 +332,34 @@ a { color: inherit; }
   border-radius: 50%;
   background: var(--red);
   pointer-events: none;
-  width: 600px; height: 600px;
-  top: -280px; right: -160px;
+  width: 500px; height: 500px;
+  top: -220px; right: -120px;
   opacity: 0.04;
 }
-.hero-inner { max-width: 860px; position: relative; z-index: 1; }
+.hero-inner { max-width: 780px; position: relative; z-index: 1; }
 .hero h1 {
   font-family: var(--font-display);
-  font-size: clamp(60px, 9vw, 108px);
+  font-size: clamp(40px, 5.5vw, 72px);
   font-weight: 700;
   letter-spacing: -0.035em;
-  line-height: 0.95;
+  line-height: 1.0;
   color: var(--dark);
-  margin-bottom: 36px;
+  margin-bottom: 28px;
 }
 .hero h1 em { color: var(--red); font-style: normal; }
 .hero-body {
-  font-size: 18px;
-  line-height: 1.7;
+  font-size: 17px;
+  line-height: 1.72;
   color: var(--mid);
   font-weight: 500;
-  max-width: 580px;
-  margin-bottom: 44px;
+  max-width: 560px;
+  margin-bottom: 40px;
 }
-.hero-body strong { color: var(--dark); font-weight: 600; }
 .hero-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 
 
 /* EOFY STRIP */
-.eofy-strip { background: var(--red); padding: 28px 48px; }
+.eofy-strip { background: var(--red); padding: 24px 48px; }
 .eofy-inner {
   max-width: 1200px;
   margin: 0 auto;
@@ -413,31 +368,20 @@ a { color: inherit; }
   justify-content: space-between;
   gap: 24px;
 }
-.eofy-badge {
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: rgba(255,255,255,0.8);
-  background: rgba(255,255,255,0.12);
-  padding: 4px 12px;
-  border-radius: 100px;
-  white-space: nowrap;
-}
-.eofy-text { display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0; }
+.eofy-copy { flex: 1; min-width: 0; }
 .eofy-heading {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--white);
-  white-space: nowrap;
+  margin-bottom: 4px;
 }
 .eofy-sub {
   font-size: 14px;
   font-weight: 500;
-  color: rgba(255,255,255,0.72);
-  line-height: 1.4;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.45;
 }
 .eofy-cta {
   font-family: var(--font-body);
@@ -450,6 +394,7 @@ a { color: inherit; }
   border-radius: 8px;
   white-space: nowrap;
   transition: background 0.2s;
+  flex-shrink: 0;
 }
 .eofy-cta:hover { background: var(--beige); }
 
@@ -457,7 +402,7 @@ a { color: inherit; }
 /* CALCULATOR */
 .calc-section { background: var(--beige); padding: 88px 48px; }
 .calc-header { max-width: 1100px; margin: 0 auto 48px; }
-.calc-header h2 { font-size: clamp(36px, 4.5vw, 54px); margin-bottom: 14px; }
+.calc-header h2 { font-size: clamp(34px, 4vw, 52px); margin-bottom: 14px; }
 .calc-header .body-text { max-width: 520px; }
 
 .calc-grid {
@@ -735,9 +680,8 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
-  .nav-inner { padding: 0 20px; height: 60px; }
-  .nav-links { display: none; }
-  .hero { padding: 64px 20px 72px; }
+  .header-inner { padding: 0 20px; height: 60px; }
+  .hero { padding: 60px 20px 64px; }
   .eofy-strip { padding: 20px; }
   .eofy-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
   .eofy-heading { font-size: 18px; }
@@ -777,12 +721,6 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
           <div class="gate-error" id="gate-email-error">Please enter a valid email address.</div>
         </div>
       </div>
-      <div class="gate-check-wrap">
-        <label class="gate-check-label">
-          <input type="checkbox" id="gate-updates" name="gate-updates">
-          <span>I am happy to receive updates from Abby</span>
-        </label>
-      </div>
       <button type="submit" class="gate-submit">Access the calculator</button>
     </form>
     <p class="gate-note">No spam. We respect your privacy.</p>
@@ -790,25 +728,14 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 </div>
 
 
-<!-- NAV -->
-<nav class="nav">
-  <div class="nav-inner">
-    <a href="https://www.cheersabby.com" class="nav-logo">
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="https://www.cheersabby.com" class="header-logo">
       <img src="https://cdn.prod.website-files.com/65e2ba72843067f242655f2e/65e3dc26301ad30d254df443_abby.png" alt="Cheers Abby">
     </a>
-    <ul class="nav-links">
-      <li><a href="https://www.cheersabby.com/features">Abby Can</a></li>
-      <li><a href="https://www.cheersabby.com/calculator" style="color:var(--red);">Calculators</a></li>
-      <li><a href="https://www.cheersabby.com/learn">Learn</a></li>
-      <li><a href="https://www.cheersabby.com/blog">Blog</a></li>
-      <li><a href="https://www.cheersabby.com/contact">Contact us</a></li>
-    </ul>
-    <div class="nav-actions">
-      <a href="https://www.cheersabby.com/contact" class="btn-nav-secondary">Log in</a>
-      <a href="https://www.cheersabby.com/book-a-demo" class="btn-primary">Book a demo</a>
-    </div>
   </div>
-</nav>
+</header>
 
 
 <!-- HERO -->
@@ -832,12 +759,11 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 <!-- EOFY STRIP -->
 <div class="eofy-strip">
   <div class="eofy-inner">
-    <span class="eofy-badge">EOFY 2026</span>
-    <div class="eofy-text">
-      <div class="eofy-heading">3 weeks to 30 June.</div>
-      <div class="eofy-sub">Practices using Abby are already ahead. No offshore queue, no EOFY bottleneck. Are you set up?</div>
+    <div class="eofy-copy">
+      <div class="eofy-heading">30 June is 3 weeks away.</div>
+      <div class="eofy-sub">Abby completes a compliance job in under 90 minutes. No offshore queue, no delays.</div>
     </div>
-    <a href="https://www.cheersabby.com/book-a-demo" class="eofy-cta">Get ready for EOFY</a>
+    <a href="https://www.cheersabby.com/book-a-demo" class="eofy-cta">Book a demo</a>
   </div>
 </div>
 
@@ -989,7 +915,6 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
 
 <script>
-/* Replace this URL with your deployed Google Apps Script web app URL */
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjD8Z46E09CUo_uz5AAeNk-uacmpeoSbYZ8cCntmarqmbq0QFE0LHBWgZrBs-eiyFz/exec';
 
 const fmt = (n) => '$' + Math.round(n).toLocaleString('en-AU');
@@ -1104,19 +1029,29 @@ gateForm.addEventListener('submit', function(e) {
 
   if (!firstOk || !lastOk || !emailOk) return;
 
-  if (APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
-    fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        firstName,
-        lastName,
-        email,
-        timestamp: new Date().toISOString()
-      }).toString()
-    }).catch(() => {});
-  }
+  const payload = new URLSearchParams({
+    firstName,
+    lastName,
+    email,
+    timestamp: new Date().toISOString()
+  }).toString();
+
+  console.log('[Abby Gate] Submitting form:', { firstName, lastName, email });
+  console.log('[Abby Gate] POST to:', APPS_SCRIPT_URL);
+  console.log('[Abby Gate] Payload:', payload);
+
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: payload
+  })
+  .then(() => {
+    console.log('[Abby Gate] POST sent. Response is opaque (no-cors) so no confirmation is possible from the browser, but the request was dispatched successfully.');
+  })
+  .catch((err) => {
+    console.error('[Abby Gate] POST failed:', err);
+  });
 
   sessionStorage.setItem('gateUnlocked', '1');
   unlockPage();
