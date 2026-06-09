@@ -193,6 +193,95 @@ a { color: inherit; }
 }
 
 
+/* POPUPS */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  background: rgba(4,1,20,0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.popup-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+.popup-card {
+  background: var(--white);
+  border-radius: 18px;
+  padding: 48px 44px 40px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.45);
+  text-align: center;
+  position: relative;
+  transform: translateY(16px);
+  transition: transform 0.25s ease;
+}
+.popup-overlay.visible .popup-card { transform: translateY(0); }
+.popup-close {
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 18px; line-height: 1;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+.popup-close:hover { background: var(--beige); color: var(--dark); }
+.popup-logo { height: 28px; width: auto; margin: 0 auto 28px; }
+.popup-eyebrow {
+  font-family: var(--font-body);
+  font-size: 12px; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--red);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-bottom: 14px;
+}
+.popup-eyebrow::before,
+.popup-eyebrow::after {
+  content: ''; display: inline-block;
+  width: 14px; height: 2px; background: var(--red); flex-shrink: 0;
+}
+.popup-heading {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: 700; letter-spacing: -0.03em; line-height: 1.1;
+  color: var(--dark); margin-bottom: 12px;
+}
+.popup-heading em { color: var(--red); font-style: normal; }
+.popup-sub {
+  font-size: 15px; font-weight: 500; color: var(--muted);
+  line-height: 1.65; margin-bottom: 32px;
+  max-width: 380px; margin-left: auto; margin-right: auto;
+}
+.popup-actions {
+  display: flex; gap: 12px; justify-content: center;
+  flex-wrap: wrap; margin-bottom: 18px;
+}
+.popup-dismiss {
+  font-family: var(--font-body);
+  font-size: 12px; font-weight: 500; color: var(--muted);
+  background: none; border: none; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px; padding: 0;
+  transition: color 0.15s;
+}
+.popup-dismiss:hover { color: var(--dark); }
+
+@media (max-width: 520px) {
+  .popup-card { padding: 40px 24px 32px; }
+  .popup-actions { flex-direction: column; }
+  .popup-actions a { text-align: center; }
+}
+
+
 /* HEADER (logo only) */
 .site-header {
   position: sticky;
@@ -709,6 +798,40 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 </div>
 
 
+<!-- POPUP: CALCULATOR RESULTS -->
+<div class="popup-overlay" id="popup-results">
+  <div class="popup-card">
+    <button class="popup-close" id="popup-results-close" aria-label="Close">&#x2715;</button>
+    <img src="https://cdn.prod.website-files.com/65e2ba72843067f242655f2e/65e3dc26301ad30d254df443_abby.png" alt="Cheers Abby" class="popup-logo">
+    <div class="popup-eyebrow">Your results</div>
+    <h3 class="popup-heading">Your practice could save <em id="popup-saving">$0</em> a year.</h3>
+    <p class="popup-sub">Switch from outsourcing to Abby and keep that money in your practice.</p>
+    <div class="popup-actions">
+      <a href="https://www.cheersabby.com/get-started" class="btn-primary btn-primary-large">Start free 30-day trial</a>
+      <a href="https://www.cheersabby.com/request-demo" class="btn-outline-dark btn-outline-dark-large">Book a demo</a>
+    </div>
+    <button class="popup-dismiss" id="popup-results-dismiss">No thanks, I'll keep outsourcing</button>
+  </div>
+</div>
+
+
+<!-- POPUP: SCROLL / TIME -->
+<div class="popup-overlay" id="popup-engage">
+  <div class="popup-card">
+    <button class="popup-close" id="popup-engage-close" aria-label="Close">&#x2715;</button>
+    <img src="https://cdn.prod.website-files.com/65e2ba72843067f242655f2e/65e3dc26301ad30d254df443_abby.png" alt="Cheers Abby" class="popup-logo">
+    <div class="popup-eyebrow">Ready to see it live?</div>
+    <h3 class="popup-heading">Watch Abby complete a <em>real job</em> in under an hour.</h3>
+    <p class="popup-sub">Book a 30-minute demo and watch Abby build a full set of workpapers from your client data, live, with no prep needed from you.</p>
+    <div class="popup-actions">
+      <a href="https://www.cheersabby.com/get-started" class="btn-primary btn-primary-large">Start free 30-day trial</a>
+      <a href="https://www.cheersabby.com/request-demo" class="btn-outline-dark btn-outline-dark-large">Book a demo</a>
+    </div>
+    <button class="popup-dismiss" id="popup-engage-dismiss">Maybe later</button>
+  </div>
+</div>
+
+
 <!-- HEADER -->
 <header class="site-header">
   <div class="header-inner">
@@ -945,6 +1068,12 @@ function calculate() {
 
   document.getElementById('verdict-heading').textContent = heading;
   document.getElementById('verdict-body').innerHTML      = body;
+
+  if (calcInteracted && !calcPopupShown && !engagePopupShown && annualSav > 0) {
+    clearTimeout(calcPopupTimer);
+    const snap = annualSav;
+    calcPopupTimer = setTimeout(() => triggerResultsPopup(snap), 2000);
+  }
 }
 
 // EOFY banner: dynamically update days remaining until 30 June
@@ -984,8 +1113,8 @@ function set(id, val) {
 function syncPair(inputId, rangeId) {
   const inp = document.getElementById(inputId);
   const rng = document.getElementById(rangeId);
-  inp.addEventListener('input', () => { rng.value = inp.value; calculate(); });
-  rng.addEventListener('input', () => { inp.value = rng.value; calculate(); });
+  inp.addEventListener('input', () => { calcInteracted = true; rng.value = inp.value; calculate(); });
+  rng.addEventListener('input', () => { calcInteracted = true; inp.value = rng.value; calculate(); });
 }
 
 syncPair('billable',      'billable-range');
@@ -993,6 +1122,59 @@ syncPair('outsource-pct', 'pct-range');
 syncPair('jobs',          'jobs-range');
 
 calculate();
+
+/* POPUPS */
+let calcInteracted   = false;
+let calcPopupShown   = false;
+let engagePopupShown = false;
+let calcPopupTimer   = null;
+let engageTimer      = null;
+let scrollHandler    = null;
+
+function showPopup(id) {
+  document.getElementById(id).classList.add('visible');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePopup(id) {
+  document.getElementById(id).classList.remove('visible');
+  document.body.style.overflow = '';
+}
+
+function triggerResultsPopup(annualSav) {
+  if (calcPopupShown || engagePopupShown) return;
+  calcPopupShown = true;
+  clearTimeout(engageTimer);
+  if (scrollHandler) { window.removeEventListener('scroll', scrollHandler); scrollHandler = null; }
+  document.getElementById('popup-saving').textContent = fmt(annualSav);
+  showPopup('popup-results');
+}
+
+function triggerEngagePopup() {
+  if (engagePopupShown || calcPopupShown) return;
+  engagePopupShown = true;
+  clearTimeout(calcPopupTimer);
+  showPopup('popup-engage');
+}
+
+function startEngageListeners() {
+  clearTimeout(engageTimer);
+  engageTimer = setTimeout(triggerEngagePopup, 45000);
+  scrollHandler = function() {
+    if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 100) {
+      clearTimeout(engageTimer);
+      window.removeEventListener('scroll', scrollHandler);
+      scrollHandler = null;
+      triggerEngagePopup();
+    }
+  };
+  window.addEventListener('scroll', scrollHandler);
+}
+
+document.getElementById('popup-results-close').addEventListener('click', () => closePopup('popup-results'));
+document.getElementById('popup-results-dismiss').addEventListener('click', () => closePopup('popup-results'));
+document.getElementById('popup-engage-close').addEventListener('click', () => closePopup('popup-engage'));
+document.getElementById('popup-engage-dismiss').addEventListener('click', () => closePopup('popup-engage'));
 
 /* GATE */
 const gateOverlay = document.getElementById('gate-overlay');
@@ -1005,6 +1187,7 @@ function unlockPage() {
 
 if (sessionStorage.getItem('gateUnlocked')) {
   unlockPage();
+  startEngageListeners();
 } else {
   document.body.classList.add('gate-active');
 }
@@ -1056,6 +1239,7 @@ gateForm.addEventListener('submit', function(e) {
 
   sessionStorage.setItem('gateUnlocked', '1');
   unlockPage();
+  startEngageListeners();
 });
 </script>
 
