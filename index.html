@@ -935,7 +935,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
       <div class="result-group">
         <div class="result-label">Weekly Abby cost</div>
         <div class="result-value brand" id="weekly-abby">$0</div>
-        <div class="result-note">$395 per job, flat rate</div>
+        <div class="result-note">$350 + GST per job</div>
       </div>
 
       <div class="result-group">
@@ -1033,10 +1033,12 @@ function calculate() {
   const pct      = parseFloat(document.getElementById('outsource-pct').value) || 25;
   const jobs     = parseFloat(document.getElementById('jobs').value)           || 20;
 
-  const abbyPrice  = 395;
-  const costPerJob = billable * (pct / 100);
-  const weeklyOut  = costPerJob * jobs;
-  const weeklyAbby = abbyPrice * jobs;
+  const abbyPriceExGst = 350;
+  const gst            = 0.15; // NZ GST
+  const abbyPrice      = abbyPriceExGst * (1 + gst); // $402.50 per job incl. GST
+  const costPerJob     = billable * (pct / 100);
+  const weeklyOut      = costPerJob * jobs;
+  const weeklyAbby     = abbyPrice * jobs;
   const weeklySav  = weeklyOut - weeklyAbby;
   const monthlySav = weeklySav * 52 / 12;
   const annualSav  = weeklySav * 52;
@@ -1054,7 +1056,7 @@ function calculate() {
   let heading, body;
   if (annualSav > 80000) {
     heading = `You could save ${fmt(annualSav)} this year.`;
-    body    = `At your volume, outsourcing is costing your practice <strong>${fmt(weeklyOut)} per week</strong>. Abby replaces that with a flat <strong>$395 per job</strong>, saving you <strong>${fmt(annualSav)} per year</strong>.`;
+    body    = `At your volume, outsourcing is costing your practice <strong>${fmt(weeklyOut)} per week</strong>. Abby replaces that at <strong>$350 + GST per job</strong>, saving you <strong>${fmt(annualSav)} per year</strong>.`;
   } else if (annualSav > 30000) {
     heading = `${fmt(annualSav)} back in your pocket.`;
     body    = `Your outsourcing spend is <strong>${fmt(weeklyOut)} per week</strong>. Abby brings that down to <strong>${fmt(weeklyAbby)}</strong>. Same jobs, same results, less cost.`;
