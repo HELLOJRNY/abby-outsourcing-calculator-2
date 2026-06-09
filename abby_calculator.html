@@ -738,10 +738,10 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
 
 <!-- EOFY STRIP -->
-<div class="eofy-strip">
+<div class="eofy-strip" id="eofy-strip">
   <div class="eofy-inner">
     <div class="eofy-copy">
-      <div class="eofy-heading">30 June is 3 weeks away.</div>
+      <div class="eofy-heading" id="eofy-heading">30 June is coming up.</div>
       <div class="eofy-sub">Abby completes a compliance job in under 90 minutes. No offshore queue, no delays.</div>
     </div>
     <a href="https://www.cheersabby.com/request-demo" class="eofy-cta">Book a demo</a>
@@ -763,38 +763,38 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
       <div class="panel-title">Your current outsourcing setup</div>
 
       <div class="field">
-        <label>Average billable value per job</label>
+        <label>Average billable cost per job</label>
         <div class="field-hint">What you charge clients for a typical compliance engagement.</div>
         <div class="input-wrap">
           <span class="input-prefix">$</span>
-          <input type="number" id="billable" min="100" max="5000" step="50" value="1500">
+          <input type="number" id="billable" min="500" max="10000" step="100" value="2500">
         </div>
         <div class="slider-wrap">
-          <input type="range" id="billable-range" min="100" max="5000" step="50" value="1500">
-          <div class="range-labels"><span>$100</span><span>$5,000</span></div>
+          <input type="range" id="billable-range" min="500" max="10000" step="100" value="2500">
+          <div class="range-labels"><span>$500</span><span>$10,000</span></div>
         </div>
       </div>
 
       <div class="field">
-        <label>Outsourcing cost as % of job value</label>
-        <div class="field-hint">What your outsourcing provider charges as a share of the job's billable value.</div>
+        <label>Cost per outsourced job (% of job)</label>
+        <div class="field-hint">What your outsourcing provider charges as a share of the billable value.</div>
         <div class="input-wrap">
-          <input type="number" id="outsource-pct" min="5" max="60" value="20">
+          <input type="number" id="outsource-pct" min="5" max="60" value="25">
           <span class="input-suffix">%</span>
         </div>
         <div class="slider-wrap">
-          <input type="range" id="pct-range" min="5" max="60" value="20">
+          <input type="range" id="pct-range" min="5" max="60" value="25">
           <div class="range-labels"><span>5%</span><span>60%</span></div>
         </div>
       </div>
 
       <div class="field">
-        <label>Jobs outsourced per week</label>
+        <label>Jobs currently outsourced per week</label>
         <div class="input-wrap">
-          <input type="number" id="jobs" min="1" max="100" value="10">
+          <input type="number" id="jobs" min="1" max="100" value="20">
         </div>
         <div class="slider-wrap">
-          <input type="range" id="jobs-range" min="1" max="100" value="10">
+          <input type="range" id="jobs-range" min="1" max="100" value="20">
           <div class="range-labels"><span>1 job</span><span>100 jobs</span></div>
         </div>
       </div>
@@ -812,18 +812,23 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
       <div class="result-group">
         <div class="result-label">Weekly Abby cost</div>
         <div class="result-value brand" id="weekly-abby">$0</div>
-        <div class="result-note">Flat subscription, spread across the week</div>
+        <div class="result-note">$395 per job, flat rate</div>
+      </div>
+
+      <div class="result-group">
+        <div class="result-label">Weekly savings</div>
+        <div class="result-value saving" id="weekly-saving">$0</div>
       </div>
 
       <div class="result-divider"></div>
 
       <div class="result-group">
-        <div class="result-label">Monthly saving</div>
+        <div class="result-label">Monthly savings</div>
         <div class="result-value cost" id="monthly-saving">$0</div>
       </div>
 
       <div class="result-group">
-        <div class="result-label">Annual saving with Abby</div>
+        <div class="result-label">Annual savings with Abby</div>
         <div class="result-value saving" id="annual-saving">$0</div>
         <div class="result-note" id="saving-sub">Based on your current job volume and outsourcing rate</div>
       </div>
@@ -900,49 +905,38 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjD8Z46E09CUo_
 
 const fmt = (n) => '$' + Math.round(n).toLocaleString('en-AU');
 
-function abbyMonthlyRate(jobsPerWeek) {
-  const monthlyJobs = jobsPerWeek * 4.33;
-  if (monthlyJobs <= 50)  return 500;
-  if (monthlyJobs <= 150) return 800;
-  if (monthlyJobs <= 300) return 1200;
-  return 1800;
-}
-
 function calculate() {
-  const billable = parseFloat(document.getElementById('billable').value)      || 1500;
-  const pct      = parseFloat(document.getElementById('outsource-pct').value) || 20;
-  const jobs     = parseFloat(document.getElementById('jobs').value)           || 10;
+  const billable = parseFloat(document.getElementById('billable').value)      || 2500;
+  const pct      = parseFloat(document.getElementById('outsource-pct').value) || 25;
+  const jobs     = parseFloat(document.getElementById('jobs').value)           || 20;
 
-  const outCostPerJob  = billable * (pct / 100);
-  const weeklyOutCost  = outCostPerJob * jobs;
-  const monthlyOutCost = weeklyOutCost * 4.33;
-  const annualOutCost  = weeklyOutCost * 52;
+  const abbyPrice  = 395;
+  const costPerJob = billable * (pct / 100);
+  const weeklyOut  = costPerJob * jobs;
+  const weeklyAbby = abbyPrice * jobs;
+  const weeklySav  = weeklyOut - weeklyAbby;
+  const monthlySav = weeklySav * 52 / 12;
+  const annualSav  = weeklySav * 52;
 
-  const abbyMonthly = abbyMonthlyRate(jobs);
-  const abbyWeekly  = abbyMonthly / 4.33;
-  const abbyAnnual  = abbyMonthly * 12;
+  set('weekly-out',    fmt(weeklyOut));
+  set('weekly-abby',   fmt(weeklyAbby));
+  set('weekly-saving', weeklySav  > 0 ? fmt(weeklySav)  : '$0');
+  set('monthly-saving', monthlySav > 0 ? fmt(monthlySav) : '$0');
+  set('annual-saving',  annualSav  > 0 ? fmt(annualSav)  : '$0');
 
-  const monthlySaving = monthlyOutCost - abbyMonthly;
-  const annualSaving  = annualOutCost  - abbyAnnual;
-
-  set('weekly-out',     fmt(weeklyOutCost));
-  set('weekly-abby',    fmt(abbyWeekly));
-  set('monthly-saving', monthlySaving > 0 ? fmt(monthlySaving) : '$0');
-  set('annual-saving',  annualSaving  > 0 ? fmt(annualSaving)  : '$0');
-
-  document.getElementById('saving-sub').textContent = annualSaving > 0
+  document.getElementById('saving-sub').textContent = annualSav > 0
     ? `Across ${Math.round(jobs * 52).toLocaleString('en-AU')} jobs per year at your current rates`
     : 'Try adjusting your job volume or outsourcing rate above.';
 
   let heading, body;
-  if (annualSaving > 80000) {
-    heading = `You could save ${fmt(annualSaving)} this year.`;
-    body    = `At your volume, outsourcing is costing your practice <strong>${fmt(annualOutCost)} annually</strong>. Abby replaces that with a flat subscription of <strong>${fmt(abbyAnnual)} per year</strong>. That is <strong>${fmt(annualSaving)} saved</strong>, every year.`;
-  } else if (annualSaving > 30000) {
-    heading = `${fmt(annualSaving)} back in your pocket.`;
-    body    = `Your outsourcing spend adds up to <strong>${fmt(annualOutCost)} a year</strong>. Abby brings that down to <strong>${fmt(abbyAnnual)}</strong>. Same jobs, same results, less cost.`;
-  } else if (annualSaving > 0) {
-    heading = `Abby saves you ${fmt(annualSaving)} annually.`;
+  if (annualSav > 80000) {
+    heading = `You could save ${fmt(annualSav)} this year.`;
+    body    = `At your volume, outsourcing is costing your practice <strong>${fmt(weeklyOut)} per week</strong>. Abby replaces that with a flat <strong>$395 per job</strong>, saving you <strong>${fmt(annualSav)} per year</strong>.`;
+  } else if (annualSav > 30000) {
+    heading = `${fmt(annualSav)} back in your pocket.`;
+    body    = `Your outsourcing spend is <strong>${fmt(weeklyOut)} per week</strong>. Abby brings that down to <strong>${fmt(weeklyAbby)}</strong>. Same jobs, same results, less cost.`;
+  } else if (annualSav > 0) {
+    heading = `Abby saves you ${fmt(annualSav)} annually.`;
     body    = `Even at your current job volume, Abby comes out ahead. And as your volume grows, so does the saving.`;
   } else {
     heading = `The numbers are closer than you think.`;
@@ -952,6 +946,35 @@ function calculate() {
   document.getElementById('verdict-heading').textContent = heading;
   document.getElementById('verdict-body').innerHTML      = body;
 }
+
+// EOFY banner: dynamically update days remaining until 30 June
+(function() {
+  const strip   = document.getElementById('eofy-strip');
+  const heading = document.getElementById('eofy-heading');
+  if (!strip || !heading) return;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const eofy = new Date(today.getFullYear(), 5, 30); // June 30, month is 0-indexed
+
+  if (today > eofy) {
+    strip.style.display = 'none';
+    return;
+  }
+
+  const diffDays = Math.ceil((eofy - today) / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) {
+    heading.textContent = '30 June is today.';
+  } else if (diffDays === 1) {
+    heading.textContent = '30 June is tomorrow.';
+  } else if (diffDays < 14) {
+    heading.textContent = `30 June is ${diffDays} days away.`;
+  } else {
+    const weeks = Math.round(diffDays / 7);
+    heading.textContent = `30 June is ${weeks} week${weeks !== 1 ? 's' : ''} away.`;
+  }
+})();
 
 function set(id, val) {
   const el = document.getElementById(id);
