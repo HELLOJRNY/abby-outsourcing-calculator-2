@@ -1171,76 +1171,76 @@ function startEngageListeners() {
   window.addEventListener('scroll', scrollHandler);
 }
 
-document.getElementById('popup-results-close').addEventListener('click', () => closePopup('popup-results'));
-document.getElementById('popup-results-dismiss').addEventListener('click', () => closePopup('popup-results'));
-document.getElementById('popup-engage-close').addEventListener('click', () => closePopup('popup-engage'));
-document.getElementById('popup-engage-dismiss').addEventListener('click', () => closePopup('popup-engage'));
+// Popup close buttons: null-guarded so a missing element never crashes the script
+['popup-results-close', 'popup-results-dismiss'].forEach(function(id) {
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('click', function() { closePopup('popup-results'); });
+});
+['popup-engage-close', 'popup-engage-dismiss'].forEach(function(id) {
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('click', function() { closePopup('popup-engage'); });
+});
 
 /* GATE */
-const gateOverlay = document.getElementById('gate-overlay');
-const gateForm    = document.getElementById('gate-form');
+(function() {
+  var overlay = document.getElementById('gate-overlay');
+  var form    = document.getElementById('gate-form');
+  if (!overlay || !form) return;
 
-function unlockPage() {
-  gateOverlay.classList.add('hidden');
-  document.body.classList.remove('gate-active');
-}
+  function dismissGate() {
+    overlay.style.display = 'none';
+    document.body.classList.remove('gate-active');
+    sessionStorage.setItem('gateUnlocked', '1');
+    startEngageListeners();
+  }
 
-if (sessionStorage.getItem('gateUnlocked')) {
-  unlockPage();
-  startEngageListeners();
-} else {
+  // Already unlocked this session
+  if (sessionStorage.getItem('gateUnlocked')) {
+    dismissGate();
+    return;
+  }
+
   document.body.classList.add('gate-active');
-}
 
-gateForm.addEventListener('submit', function(e) {
-  e.preventDefault();
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
 
-  const firstInput = document.getElementById('gate-first');
-  const lastInput  = document.getElementById('gate-last');
-  const emailInput = document.getElementById('gate-email');
-  const firstErr   = document.getElementById('gate-first-error');
-  const lastErr    = document.getElementById('gate-last-error');
-  const emailErr   = document.getElementById('gate-email-error');
+    var firstName = (document.getElementById('gate-first')  || {}).value || '';
+    var lastName  = (document.getElementById('gate-last')   || {}).value || '';
+    var email     = (document.getElementById('gate-email')  || {}).value || '';
+    firstName = firstName.trim();
+    lastName  = lastName.trim();
+    email     = email.trim();
 
-  const firstName = firstInput.value.trim();
-  const lastName  = lastInput.value.trim();
-  const email     = emailInput.value.trim();
+    var firstOk = firstName.length > 0;
+    var lastOk  = lastName.length  > 0;
+    var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const firstOk = firstName.length > 0;
-  const lastOk  = lastName.length > 0;
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    var fe = document.getElementById('gate-first-error');
+    var le = document.getElementById('gate-last-error');
+    var ee = document.getElementById('gate-email-error');
+    if (fe) fe.style.display = firstOk ? 'none' : 'block';
+    if (le) le.style.display = lastOk  ? 'none' : 'block';
+    if (ee) ee.style.display = emailOk ? 'none' : 'block';
 
-  firstErr.classList.toggle('visible', !firstOk);
-  lastErr.classList.toggle('visible',  !lastOk);
-  emailErr.classList.toggle('visible', !emailOk);
+    if (!firstOk || !lastOk || !emailOk) return;
 
-  if (!firstOk || !lastOk || !emailOk) return;
+    // Dismiss gate synchronously, no fetch dependency
+    dismissGate();
 
-  const formData = new FormData();
-  formData.append('firstName', firstName);
-  formData.append('lastName', lastName);
-  formData.append('email', email);
-  formData.append('timestamp', new Date().toISOString());
-
-  console.log('[Abby Gate] Submitting form:', { firstName, lastName, email });
-  console.log('[Abby Gate] POST to:', APPS_SCRIPT_URL);
-
-  fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    body: formData
-  })
-  .then(() => {
-    console.log('[Abby Gate] POST sent (FormData, no-cors).');
-  })
-  .catch((err) => {
-    console.error('[Abby Gate] POST failed:', err);
+    // Fire-and-forget POST, fully isolated
+    try {
+      var fd = new FormData();
+      fd.append('firstName', firstName);
+      fd.append('lastName',  lastName);
+      fd.append('email',     email);
+      fd.append('timestamp', new Date().toISOString());
+      fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: fd });
+    } catch (err) {
+      console.error('[Abby Gate] POST error:', err);
+    }
   });
-
-  sessionStorage.setItem('gateUnlocked', '1');
-  unlockPage();
-  startEngageListeners();
-});
+}());
 </script>
 
 </body>
