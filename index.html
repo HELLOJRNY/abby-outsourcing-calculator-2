@@ -784,6 +784,23 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   .footer-bottom { flex-direction: column; text-align: center; }
 }
 </style>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window,document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1092029010487016');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1092029010487016&ev=PageView&noscript=1" alt=""
+/></noscript>
+<!-- End Meta Pixel Code -->
 </head>
 <body>
 
@@ -1052,6 +1069,28 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjD8Z46E09CUo_uz5AAeNk-uacmpeoSbYZ8cCntmarqmbq0QFE0LHBWgZrBs-eiyFz/exec';
 
+/* META PIXEL EVENTS
+   Wrapped so a blocked, failed or still-loading pixel can never break the
+   calculator or the lead gate. */
+function track(event, params) {
+  try {
+    if (typeof fbq === 'function') fbq('track', event, params || {});
+  } catch (err) {
+    console.error('[Abby Pixel]', err);
+  }
+}
+
+function trackCustom(event, params) {
+  try {
+    if (typeof fbq === 'function') fbq('trackCustom', event, params || {});
+  } catch (err) {
+    console.error('[Abby Pixel]', err);
+  }
+}
+
+// ViewContent fires once per page load, not on every keystroke
+var viewContentFired = false;
+
 const fmt = (n) => '$' + Math.round(n).toLocaleString('en-AU');
 
 function calculate() {
@@ -1094,6 +1133,17 @@ function calculate() {
 
   document.getElementById('verdict-heading').textContent = heading;
   document.getElementById('verdict-body').innerHTML      = body;
+
+  // Result generated from a real user input, not the initial page-load render
+  if (calcInteracted && !viewContentFired) {
+    viewContentFired = true;
+    track('ViewContent', {
+      content_name: 'Outsourcing Calculator Result',
+      content_category: 'Calculator',
+      value: annualSav > 0 ? Math.round(annualSav) : 0,
+      currency: 'AUD'
+    });
+  }
 
   if (calcInteracted && !calcPopupShown && !engagePopupShown && annualSav > 0) {
     clearTimeout(calcPopupTimer);
@@ -1254,6 +1304,11 @@ function startEngageListeners() {
     // Dismiss gate synchronously, no fetch dependency
     dismissGate();
 
+    track('Lead', {
+      content_name: 'Calculator Gate',
+      content_category: 'Calculator'
+    });
+
     // Fire-and-forget POST, fully isolated
     try {
       var fd = new FormData();
@@ -1267,6 +1322,27 @@ function startEngageListeners() {
     }
   });
 }());
+
+/* DEMO CLICK TRACKING
+   Delegated so it covers every "Book a demo" / "Start free trial" CTA,
+   including the ones inside the popups. */
+document.addEventListener('click', function(e) {
+  var el = e.target;
+  if (!el || typeof el.closest !== 'function') return;
+
+  var link = el.closest('a[href]');
+  if (!link) return;
+
+  var href = link.getAttribute('href') || '';
+  var isDemo  = href.indexOf('cheersabby.com/request-demo') !== -1;
+  var isStart = href.indexOf('cheersabby.com/get-started')  !== -1;
+  if (!isDemo && !isStart) return;
+
+  trackCustom('DemoClick', {
+    destination: isDemo ? 'request-demo' : 'get-started',
+    link_text: (link.textContent || '').trim()
+  });
+});
 </script>
 
 </body>
